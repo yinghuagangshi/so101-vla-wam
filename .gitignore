@@ -1,0 +1,12 @@
+__pycache__/
+.env
+data/
+datasets/
+outputs/
+checkpoints/
+wandb/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.mp4
