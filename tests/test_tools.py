@@ -34,12 +34,12 @@ class ConfigTests(unittest.TestCase):
         self.assertTrue(has_placeholder({"a": ["EDIT_PORT"]}))
         self.assertFalse(has_placeholder({"port": "COM5"}))
 
-    def test_all_act_preview_actions_build(self):
+    def test_all_smoke_test_preview_actions_build(self):
         config = load([ROOT / "configs/hardware/local.example.json",
                        ROOT / "configs/deployment/local.example.json",
                        ROOT / "configs/deployment/autodl.example.json",
                        ROOT / "configs/policies/act.json",
-                       ROOT / "experiments/act_validation/experiment.example.json"])
+                       ROOT / "experiments/smoke_test/act.example.json"])
         for action in ["calibrate-follower", "calibrate-leader", "teleoperate", "record", "replay", "train", "server", "client"]:
             with self.subTest(action=action):
                 self.assertTrue(command(action, parameters(action, config)))
@@ -69,7 +69,7 @@ class ConfigTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             result = subprocess.run([sys.executable, str(ROOT / "scripts/autodl/run.py"), "train", "--config",
                                      str(ROOT / "configs/policies/act.json"), "--config",
-                                     str(ROOT / "experiments/act_validation/experiment.example.json"),
+                                     str(ROOT / "experiments/smoke_test/act.example.json"),
                                      "--runs-dir", str(Path(folder) / "runs")],
                                     capture_output=True, encoding="utf-8", errors="replace",
                                     env={**os.environ, "PYTHONIOENCODING": "ascii"})

@@ -1,4 +1,6 @@
-# ACT 操作流程
+# 采集、部署与评估流程
+
+主线实验见 [SmolVLA 方案](../experiments/smolvla_language/README.md)。采集、数据检查与结果统计工具可跨模型使用。以下可执行训练和推理示例当前使用 ACT，供 [可选 smoke test](../experiments/smoke_test/README.md) 检查链路；SmolVLA 的预训练权重、相机映射和客户端配置接入后使用独立实验配置。
 
 命令从项目根目录执行。所有入口先预览，检查参数后添加 `--execute`。配置按给定顺序合并，后者覆盖前者。设备操作前确认工作区、动作范围和停止方式。
 
@@ -14,11 +16,11 @@ python scripts/local/run.py teleoperate --config configs/hardware/local.json
 
 ## 2. 采集与回放
 
-填写 `experiments/act_validation/experiment.example.json` 中的用户标识、数据目录和任务。正式实验建议复制为新的实验 JSON 文件，保留具体版本。初次调试可将录制数量从 50 改为 2。
+填写 `experiments/smoke_test/act.example.json` 中的用户标识、数据目录和任务。该示例默认录制 2 条调试轨迹。正式实验使用独立实验 JSON 和数据版本，按对应实验方案采集。
 
 ```text
-python scripts/local/run.py record --config configs/hardware/local.json --config experiments/act_validation/experiment.example.json
-python scripts/local/run.py replay --config configs/hardware/local.json --config experiments/act_validation/experiment.example.json
+python scripts/local/run.py record --config configs/hardware/local.json --config experiments/smoke_test/act.example.json
+python scripts/local/run.py replay --config configs/hardware/local.json --config experiments/smoke_test/act.example.json
 python -m so101_project.data.inspect datasets/act_pick_place_v1
 ```
 
@@ -26,12 +28,14 @@ python -m so101_project.data.inspect datasets/act_pick_place_v1
 
 元数据检查仅确认帧率、轨迹数量和特征字段，不能替代视频解码、时间同步和示范质量检查。采集后抽样回放，并记录失败示范与筛选依据。
 
-## 3. AutoDL 训练
+## 3. 可选 ACT 训练
+
+使用兼容检查点时可跳过本节；两条调试轨迹仅用于检查数据管线。确需训练 ACT 时先扩充示范，并使用独立实验配置。
 
 将数据集完整复制到云端，保持 `meta/`、`data/`、`videos/` 等实际目录结构。修改云端实验配置中的 `training.dataset.root` 为云端真实位置。
 
 ```text
-python scripts/autodl/run.py train --config configs/policies/act.json --config experiments/act_validation/experiment.example.json
+python scripts/autodl/run.py train --config configs/policies/act.json --config experiments/smoke_test/act.example.json
 ```
 
 实际运行时添加 `--execute`。未指定 `training.output_dir` 时生成唯一目录，完整配置和命令保存到 `outputs/runs/train_*/run.json`，模型保存在对应 `model/` 下。官方训练的终端日志和指标需另外保存。`eval_split` 按轨迹留出开发数据，正式实机测试仍使用独立场景。

@@ -12,6 +12,8 @@ configs/deployment/autodl.json
 /outputs/
 /checkpoints/
 /wandb/
+/learning/
+/learning-private/
 *.log
 *.pt
 *.pth

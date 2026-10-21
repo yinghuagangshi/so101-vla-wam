@@ -4,7 +4,7 @@
     "root": "datasets/act_pick_place_v1",
     "single_task": "Pick up the block and place it in the bin.",
     "fps": 30,
-    "num_episodes": 50,
+    "num_episodes": 2,
     "episode_time_s": 30,
     "reset_time_s": 15,
     "push_to_hub": false,

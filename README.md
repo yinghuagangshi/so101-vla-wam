@@ -1,43 +1,47 @@
-# SO-101：ACT 验证与语言条件操作
+# SO-101：基于 SmolVLA 的语言指令桌面整理
 
-面向 SO-101 主从单臂的实验项目。第一阶段验证示范采集、ACT 训练和远程执行；第二阶段开展 SmolVLA 四任务微调、语言能力诊断与数据增强实验。
+使用 SO-101 主从单臂，研究视觉语言动作模型（VLA）在桌面整理任务中的微调、实机部署与语言泛化。本地负责示范采集和机械臂执行，AutoDL 负责训练和推理，底层使用固定版本的官方 LeRobot。
 
-## 开始使用
+## 任务与方法
 
-1. 按 [环境配置](docs/setup.md) 安装本地与 AutoDL 环境。
-2. 按 [ACT 操作流程](docs/workflow.md) 填写设备配置，完成采集、训练和部署。
-3. 按 [ACT 实验方案](experiments/act_validation/README.md) 记录实机测试。
-4. 按 [学习计划](learning/README.md) 学习模型与实验方法。
+场景包含红、蓝两个同形物体及左、右两个固定盒子。两个物体同时出现，每轮随机改变初始位置，根据自然语言指令将指定物体放入指定盒子。四种任务覆盖红→左、红→右、蓝→左、蓝→右。
+
+主模型采用 `lerobot/smolvla_base`，使用遥操作示范微调。核心问题是：模型能否在相同视觉场景中根据不同指令改变动作，以及能否处理训练时未见过的指令表达。
+
+## 实验与结果
+
+| 实验 | 评估设计 | 主要指标 |
+| --- | --- | --- |
+| 四任务基线 | 独立摆放，每任务计划 20 次 | 任务成功率、选错物体、放错盒子 |
+| 语言依赖诊断 | 相同摆放复位后切换四条指令 | 动作与指令的一致性 |
+| 未见表达 | 提前留出改写表达，每任务计划 10 次 | 指令改写下的成功率 |
+| 指令增强对照 | 保持轨迹与训练预算一致，比较固定表达与多表达训练 | 成功率变化及失败类型变化 |
+
+当前已提供配置组合、运行记录、数据元信息检查和评估统计工具；SmolVLA 训练与部署配置待接入，实机结果尚未产生。实验完成后在此报告实际次数、成功率、失败分类及演示视频，并关联数据版本和模型检查点。详细方案见 [SmolVLA 实验设计](experiments/smolvla_language/README.md)。
+
+## 使用与复现
+
+1. 按 [环境配置](docs/setup.md) 安装本地与 AutoDL 环境，填写设备与部署配置。
+2. 按 [SmolVLA 实验设计](experiments/smolvla_language/README.md) 准备任务、数据划分和评估场景。
+3. 参考 [采集、部署与评估流程](docs/workflow.md) 使用公共工具。
+4. 需要排查链路时，可使用 [可选 smoke test](experiments/smoke_test/README.md)；ACT 不作为 SmolVLA 的前置实验。
+
+所有命令从仓库根目录执行。启动器默认预览参数，填写模板中的 `EDIT_` 参数并添加 `--execute` 才实际运行。数据、标定、权重和逐次试验记录独立备份；汇总结果和复现配置随实验发布。
 
 ## 项目结构
 
 | 目录 | 内容 |
 | --- | --- |
 | `lerobot/` | Hugging Face 官方 LeRobot 子模块，固定到 v0.6.1 |
-| `configs/hardware/` | 主从臂端口、设备 ID、摄像头配置模板 |
-| `configs/deployment/` | 本地客户端、AutoDL 服务端配置模板 |
-| `configs/policies/` | ACT 训练配置 |
-| `scripts/local/` | 本地标定、遥操作、采集、回放、远程客户端入口 |
+| `experiments/smolvla_language/` | 主线任务、数据与语言泛化实验设计 |
+| `experiments/smoke_test/` | 可选 ACT 链路检查及示例配置 |
+| `configs/hardware/` | 主从臂与摄像头配置模板 |
+| `configs/deployment/` | 本地客户端与 AutoDL 服务端配置模板；当前客户端示例使用 ACT |
+| `configs/policies/` | 模型训练配置；当前提供 ACT 示例 |
+| `scripts/local/` | 本地标定、遥操作、采集、回放与推理客户端入口 |
 | `scripts/autodl/` | 云端训练与推理服务入口 |
-| `src/so101_project/` | 配置组合、启动记录、数据检查和评估统计工具 |
-| `experiments/` | ACT 验证与后续 SmolVLA 实验方案 |
-| `learning/` | 分阶段学习计划、资料与验收清单 |
-| `docs/` | 环境配置、操作流程、版本来源 |
-| `tests/` | 无需连接机器人或安装模型依赖的工具测试 |
-| `outputs/` | 本地运行记录、结果和视频，不进入 Git |
+| `src/so101_project/` | 配置组合、运行记录、数据检查与评估统计 |
+| `docs/` | 环境、操作流程与依赖版本 |
+| `tests/` | 无需机器人或模型依赖的工具测试 |
 
-所有命令从项目根目录执行。启动器默认只预览参数，添加 `--execute` 才实际运行：
-
-```text
-python scripts/autodl/run.py train --config configs/policies/act.json --config experiments/act_validation/experiment.example.json
-```
-
-模板中的 `EDIT_` 参数需要替换。预览不会连接硬件、启动训练或生成实机成功率。
-
-## 版本与成果边界
-
-底层机械臂驱动、模型和远程推理由官方 LeRobot 提供，详见 [依赖来源](docs/dependencies.md)。本项目维护设备与实验配置、启动工具、评估记录和后续实验分析。
-
-当前提供 ACT 工作流入口和离线检查工具；设备连接、GPU 训练和实机效果需在对应环境验证。SmolVLA 阶段目前提供实验计划，运行配置在 ACT 验证通过后补充。WAM 尚无独立实验，不设置空的模型目录。
-
-原始数据、标定文件、训练权重和实验记录独立备份。结果报告必须注明数据版本、检查点、试验次数及失败类型。
+底层驱动、模型实现和异步推理由官方 LeRobot 提供，详见 [依赖来源](docs/dependencies.md)。本项目维护任务与实验设计、运行工具、复现配置和实机评估。
