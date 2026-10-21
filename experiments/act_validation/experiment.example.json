@@ -1,0 +1,16 @@
+{
+  "recording": {
+    "repo_id": "EDIT_HF_USER/so101-act-pick-place-v1",
+    "root": "datasets/act_pick_place_v1",
+    "single_task": "Pick up the block and place it in the bin.",
+    "fps": 30,
+    "num_episodes": 50,
+    "episode_time_s": 30,
+    "reset_time_s": 15,
+    "push_to_hub": false,
+    "no_stamp": true
+  },
+  "record_options": {"display_data": true, "play_sounds": false, "resume": false},
+  "replay": {"repo_id": "EDIT_HF_USER/so101-act-pick-place-v1", "root": "datasets/act_pick_place_v1", "episode": 0, "fps": 30},
+  "training": {"dataset": {"repo_id": "EDIT_HF_USER/so101-act-pick-place-v1", "root": "datasets/act_pick_place_v1", "eval_split": 0.1}, "eval_steps": 1000}
+}

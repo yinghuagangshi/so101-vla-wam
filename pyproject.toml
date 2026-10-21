@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "so101-project"
+version = "0.1.0"
+description = "SO-101 experiment configuration, launchers and evaluation records"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+so101-run = "so101_project.launch:main"
+so101-results = "so101_project.evaluation.results:main"
+so101-data = "so101_project.data.inspect:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
