@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -70,7 +71,8 @@ class ConfigTests(unittest.TestCase):
                                      str(ROOT / "configs/policies/act.json"), "--config",
                                      str(ROOT / "experiments/act_validation/experiment.example.json"),
                                      "--runs-dir", str(Path(folder) / "runs")],
-                                    capture_output=True, encoding="utf-8", errors="replace")
+                                    capture_output=True, encoding="utf-8", errors="replace",
+                                    env={**os.environ, "PYTHONIOENCODING": "ascii"})
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertFalse((Path(folder) / "runs").exists())
 

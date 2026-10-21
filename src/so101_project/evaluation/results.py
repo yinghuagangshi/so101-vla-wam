@@ -7,6 +7,8 @@ from pathlib import Path
 import math
 from statistics import mean
 
+from ..console import configure_console
+
 FIELDS = ["trial_id", "scene_id", "task", "model", "success", "failure_type", "duration_s", "video_path", "notes"]
 FAILURES = {"wrong_object", "wrong_bin", "grasp", "transport", "release", "timeout", "communication", "hardware", "other"}
 
@@ -62,6 +64,7 @@ def summarize(rows: list[dict]) -> list[dict]:
 
 
 def main() -> int:
+    configure_console()
     parser = argparse.ArgumentParser(description="建立或汇总实机试验 CSV")
     parser.add_argument("action", choices=["init", "summary"])
     parser.add_argument("path", type=Path)

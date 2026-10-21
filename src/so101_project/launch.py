@@ -11,6 +11,7 @@ import uuid
 
 from . import LEROBOT_COMMIT, LEROBOT_VERSION
 from .config import flatten, has_placeholder, load
+from .console import configure_console
 
 MODULES = {
     "calibrate-follower": "lerobot.scripts.lerobot_calibrate",
@@ -117,6 +118,7 @@ def command(action: str, params: dict) -> list[str]:
 
 
 def main(allowed_actions: set[str] | None = None) -> int:
+    configure_console()
     parser = argparse.ArgumentParser(description="预览或运行 SO-101 官方 LeRobot 命令")
     parser.add_argument("action", choices=sorted(allowed_actions or MODULES))
     parser.add_argument("--config", action="append", required=True, help="配置层，可重复；后者覆盖前者")

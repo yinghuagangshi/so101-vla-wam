@@ -4,6 +4,8 @@ import argparse
 import json
 from pathlib import Path
 
+from ..console import configure_console
+
 
 def inspect(root: Path) -> dict:
     info = json.loads((root / "meta" / "info.json").read_text(encoding="utf-8"))
@@ -21,6 +23,7 @@ def inspect(root: Path) -> dict:
 
 
 def main() -> int:
+    configure_console()
     parser = argparse.ArgumentParser(description="检查 LeRobot 数据集元数据")
     parser.add_argument("root", type=Path)
     args = parser.parse_args()
