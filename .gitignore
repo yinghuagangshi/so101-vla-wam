@@ -7,6 +7,12 @@ __pycache__/
 configs/hardware/local.json
 configs/deployment/local.json
 configs/deployment/autodl.json
+configs/hardware/smolvla.local.json
+configs/deployment/smolvla.local.json
+configs/deployment/smolvla.autodl.json
+configs/deployment/ssh.json
+experiments/smolvla_language/experiment.json
+/calibration/
 /data/
 /datasets/
 /outputs/

@@ -1,0 +1,10 @@
+{
+  "training": {
+    "policy": {"scheduler_warmup_steps": 100, "scheduler_decay_steps": 1000},
+    "batch_size": 4,
+    "steps": 1000,
+    "save_freq": 500,
+    "eval_steps": 250,
+    "log_freq": 25
+  }
+}

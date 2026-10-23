@@ -17,13 +17,13 @@
 | 未见表达 | 提前留出改写表达，每任务计划 10 次 | 指令改写下的成功率 |
 | 指令增强对照 | 保持轨迹与训练预算一致，比较固定表达与多表达训练 | 成功率变化及失败类型变化 |
 
-当前已提供配置组合、运行记录、数据元信息检查和评估统计工具；SmolVLA 训练与部署配置待接入，实机结果尚未产生。实验完成后在此报告实际次数、成功率、失败分类及演示视频，并关联数据版本和模型检查点。详细方案见 [SmolVLA 实验设计](experiments/smolvla_language/README.md)。
+当前已提供 SmolVLA 四任务采集、AutoDL 微调和异步远程推理配置，以及运行记录、数据元信息检查、检查点结构检查和评估统计工具。配置与工具通过离线测试，实机结果尚未产生。实验完成后在此报告实际次数、成功率、失败分类及演示视频，并关联数据版本和模型检查点。详细方案见 [SmolVLA 实验设计](experiments/smolvla_language/README.md)。
 
 ## 使用与复现
 
 1. 按 [环境配置](docs/setup.md) 安装本地与 AutoDL 环境，填写设备与部署配置。
 2. 按 [SmolVLA 实验设计](experiments/smolvla_language/README.md) 准备任务、数据划分和评估场景。
-3. 参考 [采集、部署与评估流程](docs/workflow.md) 使用公共工具。
+3. 按 [采集、微调与远程推理流程](docs/workflow.md) 运行主线；设备字段见 [设备信息](docs/device-info.md)。
 4. 需要排查链路时，可使用 [可选 smoke test](experiments/smoke_test/README.md)；ACT 不作为 SmolVLA 的前置实验。
 
 所有命令从仓库根目录执行。启动器默认预览参数，填写模板中的 `EDIT_` 参数并添加 `--execute` 才实际运行。数据、标定、权重和逐次试验记录独立备份；汇总结果和复现配置随实验发布。
@@ -36,8 +36,8 @@
 | `experiments/smolvla_language/` | 主线任务、数据与语言泛化实验设计 |
 | `experiments/smoke_test/` | 可选 ACT 链路检查及示例配置 |
 | `configs/hardware/` | 主从臂与摄像头配置模板 |
-| `configs/deployment/` | 本地客户端与 AutoDL 服务端配置模板；当前客户端示例使用 ACT |
-| `configs/policies/` | 模型训练配置；当前提供 ACT 示例 |
+| `configs/deployment/` | SmolVLA 本地客户端、AutoDL 服务端与 SSH 隧道配置，以及可选 ACT 示例 |
+| `configs/policies/` | SmolVLA 微调与可选 ACT 训练配置 |
 | `scripts/local/` | 本地标定、遥操作、采集、回放与推理客户端入口 |
 | `scripts/autodl/` | 云端训练与推理服务入口 |
 | `src/so101_project/` | 配置组合、运行记录、数据检查与评估统计 |

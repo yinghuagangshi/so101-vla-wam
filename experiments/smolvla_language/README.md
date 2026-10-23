@@ -4,7 +4,7 @@
 
 使用红蓝两个同形物体、左右两个固定盒子，训练红→左、红→右、蓝→左、蓝→右四种任务。每轮两个物体同时存在，随机交换位置，每次只移动指定物体。
 
-主模型选择 `lerobot/smolvla_base`。本目录当前保存实验方案；训练与部署配置在确认数据格式、相机映射和运行环境后补充。
+主模型选择 `lerobot/smolvla_base`。`experiment.example.json` 定义四任务指令与数据版本；`pilot.json` 提供小规模试训练参数。模型初值在 `configs/policies/smolvla.json`，采集和远程部署命令见 [操作流程](../../docs/workflow.md)。
 
 设备接通并能采集、回放后，直接进入 SmolVLA 小规模试训练。仅在排查数据或部署链路时使用 [可选 smoke test](../smoke_test/README.md)，不要求先完成 ACT 训练。
 

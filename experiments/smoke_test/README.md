@@ -15,4 +15,4 @@
 
 任务为将一个易夹取物体放入固定盒子，任务文本为 `Pick up the block and place it in the bin.`。`act.example.json` 默认录制 2 条轨迹，供数据管线检查；若决定训练 ACT，需另建数据版本并扩充成功示范，不能把这两条调试数据视为充分训练集。
 
-`configs/policies/act.json` 提供训练初值，`configs/deployment/local.example.json` 提供 ACT 客户端示例。具体命令见 [操作流程](../../docs/workflow.md)。
+`configs/policies/act.json` 提供训练初值，`configs/deployment/local.example.json` 提供 ACT 客户端示例。具体命令见 [smoke test 流程](../../docs/smoke-test.md)。

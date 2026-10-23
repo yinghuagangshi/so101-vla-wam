@@ -1,0 +1,28 @@
+{
+  "training": {
+    "policy": {
+      "path": "lerobot/smolvla_base",
+      "device": "cuda",
+      "push_to_hub": false,
+      "input_features": null,
+      "use_amp": false,
+      "chunk_size": 50,
+      "n_action_steps": 50,
+      "freeze_vision_encoder": true,
+      "train_expert_only": true,
+      "train_state_proj": true,
+      "optimizer_lr": 0.0001,
+      "scheduler_warmup_steps": 1000,
+      "scheduler_decay_steps": 20000
+    },
+    "batch_size": 8,
+    "num_workers": 4,
+    "steps": 20000,
+    "save_freq": 5000,
+    "log_freq": 100,
+    "eval_steps": 1000,
+    "env_eval_freq": 0,
+    "seed": 42,
+    "wandb": {"enable": false}
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "training": {
+    "dataset": {"root": "/autodl-tmp/EDIT_DATASET_ROOT"}
+  },
+  "server": {"host": "127.0.0.1", "port": 8080, "fps": 30, "obs_queue_timeout": 2}
+}

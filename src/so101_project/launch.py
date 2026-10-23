@@ -34,7 +34,19 @@ def required(config: dict, name: str) -> dict:
     return value
 
 
-def parameters(action: str, config: dict) -> dict:
+def parameters(action: str, config: dict, task: str | None = None, resume_recording: bool = False) -> dict:
+    if task is not None and action not in {"record", "client"}:
+        raise ValueError("--task 仅用于 record 或 client")
+    if resume_recording and action != "record":
+        raise ValueError("--resume-recording 仅用于 record")
+    instruction = None
+    if action in {"record", "client"} and ("tasks" in config or task is not None):
+        tasks = required(config, "tasks")
+        if task not in tasks:
+            raise ValueError(f"请使用 --task 选择任务：{', '.join(tasks)}")
+        instruction = tasks[task]
+        if not isinstance(instruction, str) or not instruction.strip():
+            raise ValueError(f"任务 {task} 的指令必须为非空字符串")
     if action == "train":
         result = dict(required(config, "training"))
         dataset = required(result, "dataset")
@@ -42,6 +54,8 @@ def parameters(action: str, config: dict) -> dict:
             raise ValueError("training.dataset.repo_id 不能为空")
         if not result.get("policy", {}).get("type") and not result.get("policy", {}).get("path"):
             raise ValueError("training.policy 需要 type 或 path")
+        if result.get("policy", {}).get("type") and result.get("policy", {}).get("path"):
+            raise ValueError("training.policy.path 与 type 不能同时设置；微调使用 path")
         if result.get("resume"):
             raise ValueError("此入口用于新训练；断点续训请按官方文档使用检查点配置")
         return result
@@ -83,19 +97,25 @@ def parameters(action: str, config: dict) -> dict:
     if action == "teleoperate":
         result.update(config.get("teleoperation", {}))
     elif action == "record":
-        result["dataset"] = required(config, "recording")
+        result["dataset"] = dict(required(config, "recording"))
+        if instruction is not None:
+            result["dataset"]["single_task"] = instruction
         if not result["dataset"].get("repo_id") or not result["dataset"].get("single_task"):
             raise ValueError("recording 需要 repo_id 和 single_task")
         for key in ("num_episodes", "episode_time_s", "fps"):
             if result["dataset"].get(key, 0) <= 0:
                 raise ValueError(f"recording.{key} 必须为正数")
         result.update(config.get("record_options", {}))
+        if resume_recording:
+            result["resume"] = True
     elif action == "replay":
         result["dataset"] = required(config, "replay")
         if not result["dataset"].get("repo_id") or result["dataset"].get("episode", -1) < 0:
             raise ValueError("replay 需要 repo_id 和非负 episode")
     elif action == "client":
-        remote = required(config, "remote")
+        remote = dict(required(config, "remote"))
+        if instruction is not None:
+            remote["task"] = instruction
         for key in ("server_address", "policy_type", "pretrained_name_or_path", "task"):
             if not remote.get(key):
                 raise ValueError(f"remote.{key} 不能为空")
@@ -110,8 +130,7 @@ def parameters(action: str, config: dict) -> dict:
 def command(action: str, params: dict) -> list[str]:
     args = [sys.executable, "-m", MODULES[action]]
     for key, value in flatten(params).items():
-        if value is None:
-            continue
+        # Explicit JSON null clears pretrained input features before dataset inference.
         encoded = value if isinstance(value, str) else json.dumps(value, ensure_ascii=False)
         args.append(f"--{key}={encoded}")
     return args
@@ -122,12 +141,14 @@ def main(allowed_actions: set[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="预览或运行 SO-101 官方 LeRobot 命令")
     parser.add_argument("action", choices=sorted(allowed_actions or MODULES))
     parser.add_argument("--config", action="append", required=True, help="配置层，可重复；后者覆盖前者")
+    parser.add_argument("--task", help="任务表中的任务 ID，用于采集或实机推理")
+    parser.add_argument("--resume-recording", action="store_true", help="向已有数据集追加本次示范")
     parser.add_argument("--execute", action="store_true", help="实际启动；默认仅显示参数")
     parser.add_argument("--runs-dir", default="outputs/runs")
     args = parser.parse_args()
     try:
         config = load(args.config)
-        params = parameters(args.action, config)
+        params = parameters(args.action, config, args.task, args.resume_recording)
         run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "_" + uuid.uuid4().hex[:8]
         run_dir = Path(args.runs_dir).resolve() / f"{args.action}_{run_id}"
         if args.action == "train":
@@ -154,6 +175,7 @@ def main(allowed_actions: set[str] | None = None) -> int:
         snapshot = {
             "action": args.action, "command": cmd, "parameters": params,
             "config_files": [str(Path(path).resolve()) for path in args.config],
+            "task_id": args.task,
             "lerobot_version": installed, "lerobot_reference_commit": LEROBOT_COMMIT,
             "started_at": datetime.now(timezone.utc).isoformat(),
         }

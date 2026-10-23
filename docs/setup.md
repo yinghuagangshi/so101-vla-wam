@@ -13,20 +13,38 @@
 本地：
 
 ```text
-python -m pip install -e "./lerobot[core_scripts,feetech,async]"
+python -m pip install torch==2.8.0 torchvision==0.23.0 --index-url https://download.pytorch.org/whl/cpu
+python -m pip install -c requirements/runtime-constraints.txt -e "./lerobot[core_scripts,feetech,async]"
 python -m pip install -e .
 ```
 
 AutoDL：
 
 ```text
-python -m pip install -e "./lerobot[training,async]"
+python -m pip install torch==2.8.0 torchvision==0.23.0 --index-url https://download.pytorch.org/whl/cu128
+python -m pip install -c requirements/runtime-constraints.txt -e "./lerobot[training,async,smolvla]"
 python -m pip install -e .
 ```
 
-后续 SmolVLA 训练和服务端额外安装同一源码版本的 `smolvla` 依赖。不要将本项目根目录安装误认为已安装 LeRobot：根目录仅包含轻量实验工具。
+本地仅采集和运行异步客户端，不需要安装 SmolVLA 模型依赖。根目录安装只包含轻量实验工具，LeRobot 需另行安装。两端安装完成后运行 `python -m pip check`。
 
-## 配置
+上述 PyTorch 版本配对来自 [PyTorch 官方安装表](https://pytorch.org/get-started/previous-versions/)，TorchCodec 配对见 [官方兼容表](https://github.com/pytorch/torchcodec/blob/v0.8.0/README.md#installing-torchcodec)。`runtime-constraints.txt` 限制这三个二进制相关包，完整环境以安装后的依赖清单为准。TorchCodec 0.7 的视频解码需要共享版 FFmpeg 4—7；在 Conda 环境中可安装 `ffmpeg<8`，并验证实际编解码。如果已有匹配的 PyTorch/CUDA 环境，先核对版本，再执行 LeRobot 安装。
+
+## SmolVLA 配置
+
+从仓库根目录运行 `python scripts/local/init_configs.py` 创建个人配置；已存在的文件保持不变。设备字段见 [设备信息](device-info.md)，完整命令见 [操作流程](workflow.md)。
+
+| 模板 | 个人文件 | 用途 |
+| --- | --- | --- |
+| `configs/hardware/smolvla.local.example.json` | `configs/hardware/smolvla.local.json` | 主从臂、标定目录、两个相机 |
+| `experiments/smolvla_language/experiment.example.json` | `experiments/smolvla_language/experiment.json` | 四任务指令、数据标识与本地数据目录 |
+| `configs/deployment/smolvla.autodl.example.json` | `configs/deployment/smolvla.autodl.json` | 云端数据目录、推理服务 |
+| `configs/deployment/smolvla.local.example.json` | `configs/deployment/smolvla.local.json` | 本地客户端、云端微调检查点路径 |
+| `configs/deployment/ssh.example.json` | `configs/deployment/ssh.json` | SSH 主机、端口、用户名与端口转发 |
+
+SmolVLA 使用 `camera1` 表示全局视角、`camera2` 表示腕部视角，实际设备编号需要检查；不与旧 ACT 的 `front/wrist` 硬件配置叠加。训练配置通过 `policy.input_features=null` 从本次数据重建输入特征，并加载预训练权重。第三个相机加入时使用新的数据和模型版本，同时更新采集与推理配置。
+
+## 可选 ACT 配置
 
 复制以下模板并填写，模板保留在 Git，个人配置被忽略：
 

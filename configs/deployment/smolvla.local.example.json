@@ -1,0 +1,14 @@
+{
+  "remote": {
+    "server_address": "127.0.0.1:8080",
+    "policy_type": "smolvla",
+    "pretrained_name_or_path": "EDIT_FINETUNED_MODEL_PATH_ON_SERVER",
+    "policy_device": "cuda",
+    "client_device": "cpu",
+    "fps": 30,
+    "actions_per_chunk": 50,
+    "chunk_size_threshold": 0.5,
+    "aggregate_fn_name": "weighted_average",
+    "debug_visualize_queue_size": false
+  }
+}
