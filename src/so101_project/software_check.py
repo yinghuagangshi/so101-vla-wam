@@ -13,7 +13,7 @@ import time
 from .console import configure_console
 
 
-def check(model_path: Path, output: Path, device: str, threads: int) -> dict:
+def check(model_path: Path, output: Path, device: str, threads: int, train_batch_size: int = 1) -> dict:
     # This check requires the complete local resource bundle and must fail on a
     # missing file instead of silently waiting for a Hub request.
     os.environ["HF_HUB_OFFLINE"] = "1"
@@ -43,6 +43,11 @@ def check(model_path: Path, output: Path, device: str, threads: int) -> dict:
         "torch": torch.__version__, "threads": threads,
         "robot_connected": False, "real_demonstrations_used": False,
     }
+    if device == "cuda":
+        report["cuda_runtime"] = torch.version.cuda
+        report["gpu"] = torch.cuda.get_device_name(0)
+        report["gpu_memory_bytes"] = torch.cuda.get_device_properties(0).total_memory
+        torch.cuda.reset_peak_memory_stats()
     config = PreTrainedConfig.from_pretrained(model_path)
     config.device = device
     config.push_to_hub = False
@@ -87,8 +92,12 @@ def check(model_path: Path, output: Path, device: str, threads: int) -> dict:
     # One optimizer step only tests the training path; these are synthetic targets.
     policy.train()
     print("Running one synthetic optimizer step", flush=True)
-    batch = pre({**raw, "action": torch.zeros(1, config.chunk_size, 6)})
-    batch["action_is_pad"] = torch.zeros(1, config.chunk_size, dtype=torch.bool, device=device)
+    training_raw = {key: value.unsqueeze(0).repeat(train_batch_size, *([1] * value.ndim))
+                    for key, value in raw.items() if isinstance(value, torch.Tensor)}
+    training_raw["task"] = [raw["task"]] * train_batch_size
+    training_raw["action"] = torch.zeros(train_batch_size, config.chunk_size, 6)
+    batch = pre(training_raw)
+    batch["action_is_pad"] = torch.zeros(train_batch_size, config.chunk_size, dtype=torch.bool, device=device)
     trainable = [p for p in policy.parameters() if p.requires_grad]
     optimizer = torch.optim.AdamW(trainable, lr=1e-4)
     before = trainable[0].detach().clone()
@@ -102,9 +111,11 @@ def check(model_path: Path, output: Path, device: str, threads: int) -> dict:
     optimizer.step()
     if torch.equal(before, trainable[0]):
         raise RuntimeError("优化器未更新参数")
-    report["synthetic_update"] = {"steps": 1, "loss": loss.item(),
+    report["synthetic_update"] = {"steps": 1, "batch_size": train_batch_size, "loss": loss.item(),
                                   "grad_norm": grad_norm.item(), "parameter_changed": True,
                                   "seconds": time.perf_counter() - start}
+    if device == "cuda":
+        report["synthetic_update"]["peak_cuda_allocated_bytes"] = torch.cuda.max_memory_allocated()
     checkpoint = output / "synthetic_checkpoint"
     print("Saving synthetic checkpoint and processors", flush=True)
     policy.save_pretrained(checkpoint)
@@ -180,10 +191,12 @@ def main() -> int:
     parser.add_argument("--output-dir", type=Path, required=True, help="新的诊断输出目录，不可为已有目录")
     parser.add_argument("--device", choices=("cpu", "cuda"), default="cuda")
     parser.add_argument("--threads", type=int, default=4)
+    parser.add_argument("--train-batch-size", type=int, default=1)
     args = parser.parse_args()
-    if args.threads < 1:
-        parser.error("--threads 必须为正数")
-    report = check(args.model_path.resolve(), args.output_dir.resolve(), args.device, args.threads)
+    if args.threads < 1 or args.train_batch_size < 1:
+        parser.error("--threads 和 --train-batch-size 必须为正数")
+    report = check(args.model_path.resolve(), args.output_dir.resolve(), args.device,
+                   args.threads, args.train_batch_size)
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0
 

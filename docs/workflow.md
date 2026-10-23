@@ -95,6 +95,8 @@ python scripts/local/tunnel.py --config configs/deployment/ssh.json
 
 添加 `--execute` 才运行 SSH；使用已有 SSH 密钥或在终端交互认证。首次连接核实主机指纹，不关闭主机校验。修改服务端或转发端口时，同步更新服务配置、SSH 配置与本地客户端地址。
 
+机械臂尚未连接时，可按 [无设备软件验证](software-check.md) 使用远程探针检查跨机通信与云端 GPU 动作返回。
+
 在 `configs/deployment/smolvla.local.json` 填入云端实际微调检查点绝对路径。使用微调后的完整目录，不把未适配的基础模型直接用于实机执行。
 
 ```text
