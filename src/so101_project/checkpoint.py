@@ -9,6 +9,8 @@ from .console import configure_console
 
 
 def inspect_checkpoint(path: Path, hardware: dict) -> dict:
+    if (path / "SYNTHETIC_ONLY.txt").exists():
+        raise ValueError("这是合成数据软件诊断检查点，不能作为实机部署模型")
     policy = load([path / "config.json"])
     if policy.get("type") != "smolvla":
         raise ValueError("检查点不是 SmolVLA")

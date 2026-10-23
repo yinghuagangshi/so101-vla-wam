@@ -28,7 +28,7 @@ python -m pip install -e .
 
 本地仅采集和运行异步客户端，不需要安装 SmolVLA 模型依赖。根目录安装只包含轻量实验工具，LeRobot 需另行安装。两端安装完成后运行 `python -m pip check`。
 
-上述 PyTorch 版本配对来自 [PyTorch 官方安装表](https://pytorch.org/get-started/previous-versions/)，TorchCodec 配对见 [官方兼容表](https://github.com/pytorch/torchcodec/blob/v0.8.0/README.md#installing-torchcodec)。`runtime-constraints.txt` 限制这三个二进制相关包，完整环境以安装后的依赖清单为准。TorchCodec 0.7 的视频解码需要共享版 FFmpeg 4—7；在 Conda 环境中可安装 `ffmpeg<8`，并验证实际编解码。如果已有匹配的 PyTorch/CUDA 环境，先核对版本，再执行 LeRobot 安装。
+上述 PyTorch 版本配对来自 [PyTorch 官方安装表](https://pytorch.org/get-started/previous-versions/)，TorchCodec 配对见 [官方兼容表](https://github.com/pytorch/torchcodec/blob/v0.8.0/README.md#installing-torchcodec)。`runtime-constraints.txt` 固定这三个二进制相关包，以及已验证的 Transformers、Tokenizers 和 Accelerate 版本；完整环境以安装后的依赖清单为准。TorchCodec 0.7 的视频解码需要共享版 FFmpeg 4—7；在 Conda 环境中可安装 `ffmpeg<8`，并验证实际编解码。如果已有匹配的 PyTorch/CUDA 环境，先核对版本，再执行 LeRobot 安装。
 
 Ubuntu 22.04 镜像若提示缺少 `libavdevice.so.58`，安装对应共享库后，在新进程中验证：
 
@@ -40,19 +40,15 @@ python -c "import torchcodec; print('TorchCodec ready')"
 
 ## 基础模型与网络
 
-复现时使用 `lerobot/smolvla_base` 的固定版本 `5e8d12a6e2975b0e5e5fce7c8caf47c371d257b6`。官方地址可达时，直接运行 `hf download`。AutoDL 上访问受限时，可使用 [平台文档列出的镜像](https://api.autodl.com/docs/network_turbo/)，在云端当前终端设置：
+复现时使用 `lerobot/smolvla_base` 的固定版本 `5e8d12a6e2975b0e5e5fce7c8caf47c371d257b6`，以及固定版本的骨干配置和分词器。在云端执行：
 
 ```text
-export HF_ENDPOINT=https://hf-mirror.com
-export HF_HUB_DISABLE_IMPLICIT_TOKEN=1
-export HF_HUB_DISABLE_XET=1
-hf download lerobot/smolvla_base --revision 5e8d12a6e2975b0e5e5fce7c8caf47c371d257b6 --local-dir /root/autodl-tmp/models/smolvla_base
-sha256sum /root/autodl-tmp/models/smolvla_base/model.safetensors
+python scripts/autodl/prepare_smolvla.py --output-dir /root/autodl-tmp/models --endpoint huggingface --workers 4 --prepare-local
 ```
 
-基础权重的 SHA-256 应为 `7cd549ac2351fb069c0ddb3c34ad2d09cfc92b56a15dccdfc2e41467aaca01eb`，来源为 [Hugging Face 官方文件元数据](https://huggingface.co/api/models/lerobot/smolvla_base/revision/5e8d12a6e2975b0e5e5fce7c8caf47c371d257b6?blobs=true)。将个人云端配置的 `training.policy.path` 设为下载目录；基础权重目录与微调后的实机部署目录分别维护。
+官方地址访问受限时，将端点显式改为 `--endpoint hf-mirror`，对应 [AutoDL 文档列出的镜像](https://api.autodl.com/docs/network_turbo/)。工具支持分片续传，并按官方文件元数据校验全部资源；完整基础权重的 SHA-256 为 `7cd549ac2351fb069c0ddb3c34ad2d09cfc92b56a15dccdfc2e41467aaca01eb`，见 [官方元数据](https://huggingface.co/api/models/lerobot/smolvla_base/revision/5e8d12a6e2975b0e5e5fce7c8caf47c371d257b6?blobs=true)。
 
-训练与推理还会读取视觉语言骨干配置和分词器资源，应在相应进程沿用可用的 `HF_ENDPOINT`，或先完成缓存。上述认证设置用于公开基础模型下载；本项目数据从本地目录读取，默认不上传 Hub。
+将个人云端配置的 `training.policy.path` 设为生成的 `/root/autodl-tmp/models/smolvla_local`，与云端模板保持一致。该目录包含本机骨干与分词器路径；跨机器移动时重新生成。完整加载、合成数据参数更新与通信检查见 [无设备软件验证](software-check.md)。实机客户端最终使用真实示范微调后的检查点。
 
 ## SmolVLA 配置
 

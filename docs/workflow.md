@@ -70,7 +70,7 @@ python scripts/autodl/run.py train --config configs/policies/smolvla.json --conf
 
 正式基线去掉最后一层 pilot 配置，默认 20,000 步、batch size 8。按实际显存、开发损失与实机结果调整；pilot 的少量数据和短训练用于验证流程。
 
-模型通过 `policy.path=lerobot/smolvla_base` 加载预训练权重，不同时传 `policy.type`。`policy.input_features=null` 清除预训练相机特征，由当前数据重建，因此两相机数据不会被当作原模型的三相机输入。初始配置冻结视觉编码器，以动作专家和状态投影为主要训练部分，保持四任务共同训练。
+先按 [环境配置](setup.md) 准备固定版本的基础模型资源。AutoDL 配置将 `policy.path` 覆盖为 `/root/autodl-tmp/models/smolvla_local`，从本机完整检查点加载预训练权重，不同时传 `policy.type`。`policy.input_features=null` 清除预训练相机特征，由当前数据重建，因此两相机数据不会被当作原模型的三相机输入。初始配置冻结视觉编码器，以动作专家和状态投影为主要训练部分，保持四任务共同训练。
 
 启动器保存完整参数与退出状态到 `outputs/runs/train_*/run.json`，模型在该次目录的 `model/` 下。另行保存训练终端日志、开发损失及依赖清单。不设置已有输出目录；断点续训按官方检查点配置流程执行。
 
@@ -103,7 +103,7 @@ python scripts/local/run.py client --config configs/hardware/smolvla.local.json 
 
 逐次改变 `--task` 测试四条指令，每次停止客户端、复位场景后重新启动。固定版本客户端在一次进程中使用一条指令，不提供运行中修改任务或自动复位。
 
-客户端使用官方动作队列。30 Hz、每段 50 个动作、队列阈值 0.5 是初值；需观察实际推理耗时、网络延迟与队列是否断流。先做受控短执行，确认相机映射、动作单位和停止方式，再开展正式测试。当前不自动判定任务成功或录制评估视频。
+客户端通过项目兼容入口运行官方动作队列，串行化动作段合并与执行，修复固定版本的队列并发竞争；见 [软件验证](software-check.md)。30 Hz、每段 50 个动作、队列阈值 0.5 是初值；需观察实际推理耗时、网络延迟与队列是否断流。先做受控短执行，确认相机映射、动作单位和停止方式，再开展正式测试。当前不自动判定任务成功或录制评估视频。
 
 ## 7. 结果记录
 

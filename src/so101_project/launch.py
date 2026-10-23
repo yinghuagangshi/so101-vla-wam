@@ -21,7 +21,7 @@ MODULES = {
     "replay": "lerobot.scripts.lerobot_replay",
     "train": "lerobot.scripts.lerobot_train",
     "server": "lerobot.async_inference.policy_server",
-    "client": "lerobot.async_inference.robot_client",
+    "client": "so101_project.async_client",
 }
 LOCAL_ACTIONS = set(MODULES) - {"train", "server"}
 CLOUD_ACTIONS = {"train", "server"}

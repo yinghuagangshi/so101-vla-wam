@@ -16,6 +16,7 @@ experiments/smolvla_language/experiment.json
 /data/
 /datasets/
 /outputs/
+/logs/
 /checkpoints/
 /wandb/
 /learning/

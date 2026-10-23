@@ -54,7 +54,7 @@ class SmolVLAConfigTests(unittest.TestCase):
                        ROOT / "experiments/smolvla_language/pilot.json"])
         params = parameters("train", config)
         args = command("train", params)
-        self.assertIn("--policy.path=lerobot/smolvla_base", args)
+        self.assertIn("--policy.path=/root/autodl-tmp/models/smolvla_local", args)
         self.assertIn("--policy.input_features=null", args)
         self.assertFalse(any(arg.startswith("--policy.type=") for arg in args))
         self.assertEqual(params["steps"], 1000)
@@ -100,6 +100,13 @@ class TunnelTests(unittest.TestCase):
 
 
 class CheckpointTests(unittest.TestCase):
+    def test_synthetic_diagnostic_checkpoint_is_not_a_deployment_model(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder)
+            (path / "SYNTHETIC_ONLY.txt").write_text("synthetic diagnostic", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "诊断检查点"):
+                inspect_checkpoint(path, {})
+
     def test_exported_camera_contract_and_missing_processor_state(self):
         hardware = load([ROOT / "configs/hardware/smolvla.local.example.json"])
         with tempfile.TemporaryDirectory() as folder:
