@@ -1,0 +1,7 @@
+# Matched runtime pair; CPU or CUDA wheels are selected at installation time.
+torch==2.8.0
+torchvision==0.23.0
+torchcodec==0.7.0
+transformers==5.5.4
+tokenizers==0.22.2
+accelerate==1.15.0

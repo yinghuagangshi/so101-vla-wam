@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "description": "Pinned public SmolVLA checkpoint and backbone configuration/tokenizer resources. Hashes and sizes come from the official Hugging Face model API.",
+  "sources": [
+    {
+      "directory": "smolvla_base",
+      "repo_id": "lerobot/smolvla_base",
+      "revision": "5e8d12a6e2975b0e5e5fce7c8caf47c371d257b6",
+      "metadata_url": "https://huggingface.co/api/models/lerobot/smolvla_base/revision/5e8d12a6e2975b0e5e5fce7c8caf47c371d257b6?blobs=true",
+      "files": [
+        {
+          "name": "config.json",
+          "size": 2299,
+          "git_blob_sha1": "36d4d51c1b01be11b2c7a074ab34bf5ee6db9021"
+        },
+        {
+          "name": "model.safetensors",
+          "size": 906712520,
+          "sha256": "7cd549ac2351fb069c0ddb3c34ad2d09cfc92b56a15dccdfc2e41467aaca01eb"
+        },
+        {
+          "name": "policy_postprocessor.json",
+          "size": 660,
+          "git_blob_sha1": "6f8997e5be18c67bad9377dd2cd9622ba38b5ae3"
+        },
+        {
+          "name": "policy_postprocessor_step_0_unnormalizer_processor.safetensors",
+          "size": 640,
+          "sha256": "490ab239d96e263687c0b2e386a0afbc235a2eceb9857c36ed32f2f162a3e7c8"
+        },
+        {
+          "name": "policy_preprocessor.json",
+          "size": 1872,
+          "git_blob_sha1": "4df8f7cbce54095074f9cf31b663e5af5c006f85"
+        },
+        {
+          "name": "policy_preprocessor_step_5_normalizer_processor.safetensors",
+          "size": 640,
+          "sha256": "490ab239d96e263687c0b2e386a0afbc235a2eceb9857c36ed32f2f162a3e7c8"
+        }
+      ]
+    },
+    {
+      "directory": "smolvlm",
+      "repo_id": "HuggingFaceTB/SmolVLM2-500M-Video-Instruct",
+      "revision": "7b375e1b73b11138ff12fe22c8f2822d8fe03467",
+      "metadata_url": "https://huggingface.co/api/models/HuggingFaceTB/SmolVLM2-500M-Video-Instruct/revision/7b375e1b73b11138ff12fe22c8f2822d8fe03467?blobs=true",
+      "files": [
+        {
+          "name": "added_tokens.json",
+          "size": 4739,
+          "git_blob_sha1": "71dc811700b6aa9274d3697ee7d4fb2d5375e766"
+        },
+        {
+          "name": "chat_template.json",
+          "size": 430,
+          "git_blob_sha1": "1d342e4f070c962a14ba4ece4e06212bc70d8e36"
+        },
+        {
+          "name": "config.json",
+          "size": 3767,
+          "git_blob_sha1": "2463e842695989a207176fdb249327a494b05cfb"
+        },
+        {
+          "name": "generation_config.json",
+          "size": 136,
+          "git_blob_sha1": "eace9aa6d392fd94dbe0c90825074c53fd7ecd4a"
+        },
+        {
+          "name": "merges.txt",
+          "size": 466391,
+          "git_blob_sha1": "69503b13f727ba3812b6803e97442a6de05ef5eb"
+        },
+        {
+          "name": "preprocessor_config.json",
+          "size": 599,
+          "git_blob_sha1": "bf7669a38692ad141d333db3be18bd55cb6e2c59"
+        },
+        {
+          "name": "processor_config.json",
+          "size": 67,
+          "git_blob_sha1": "83df8c48da1f41e1a9129a4bc2aba000eb2b529f"
+        },
+        {
+          "name": "special_tokens_map.json",
+          "size": 868,
+          "git_blob_sha1": "2b5aee28d56c0e9d89ff6bc70818fba986a90ca9"
+        },
+        {
+          "name": "tokenizer.json",
+          "size": 3548256,
+          "git_blob_sha1": "a4005d1cf3170a31600a5c96f95768166cbc2b28"
+        },
+        {
+          "name": "tokenizer_config.json",
+          "size": 28626,
+          "git_blob_sha1": "e4042a1126290fdb96ece2a4ad8dd7108c5de484"
+        },
+        {
+          "name": "vocab.json",
+          "size": 800662,
+          "git_blob_sha1": "0ad5ecc2035b7031b88afb544ee95e2d49baa484"
+        }
+      ]
+    }
+  ]
+}

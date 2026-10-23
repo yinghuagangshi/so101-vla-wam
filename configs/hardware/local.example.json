@@ -1,0 +1,13 @@
+{
+  "robot": {
+    "type": "so101_follower",
+    "port": "EDIT_FOLLOWER_PORT",
+    "id": "so101_follower",
+    "cameras": {
+      "front": {"type": "opencv", "index_or_path": 0, "width": 640, "height": 480, "fps": 30},
+      "wrist": {"type": "opencv", "index_or_path": 1, "width": 640, "height": 480, "fps": 30}
+    }
+  },
+  "teleop": {"type": "so101_leader", "port": "EDIT_LEADER_PORT", "id": "so101_leader"},
+  "teleoperation": {"fps": 30, "display_data": true}
+}

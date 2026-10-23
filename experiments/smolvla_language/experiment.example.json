@@ -1,0 +1,32 @@
+{
+  "tasks": {
+    "red_left": "Pick up the red block and place it in the left bin.",
+    "red_right": "Pick up the red block and place it in the right bin.",
+    "blue_left": "Pick up the blue block and place it in the left bin.",
+    "blue_right": "Pick up the blue block and place it in the right bin."
+  },
+  "recording": {
+    "repo_id": "EDIT_HF_USER/so101-smolvla-sorting-pilot-v1",
+    "root": "datasets/smolvla_sorting_pilot_v1",
+    "fps": 30,
+    "num_episodes": 10,
+    "episode_time_s": 30,
+    "reset_time_s": 15,
+    "push_to_hub": false,
+    "no_stamp": true
+  },
+  "record_options": {"display_data": true, "play_sounds": false, "resume": false},
+  "replay": {
+    "repo_id": "EDIT_HF_USER/so101-smolvla-sorting-pilot-v1",
+    "root": "datasets/smolvla_sorting_pilot_v1",
+    "episode": 0,
+    "fps": 30
+  },
+  "training": {
+    "dataset": {
+      "repo_id": "EDIT_HF_USER/so101-smolvla-sorting-pilot-v1",
+      "root": "datasets/smolvla_sorting_pilot_v1",
+      "eval_split": 0.1
+    }
+  }
+}
