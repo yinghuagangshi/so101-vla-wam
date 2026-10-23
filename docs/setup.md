@@ -30,6 +30,14 @@ python -m pip install -e .
 
 上述 PyTorch 版本配对来自 [PyTorch 官方安装表](https://pytorch.org/get-started/previous-versions/)，TorchCodec 配对见 [官方兼容表](https://github.com/pytorch/torchcodec/blob/v0.8.0/README.md#installing-torchcodec)。`runtime-constraints.txt` 限制这三个二进制相关包，完整环境以安装后的依赖清单为准。TorchCodec 0.7 的视频解码需要共享版 FFmpeg 4—7；在 Conda 环境中可安装 `ffmpeg<8`，并验证实际编解码。如果已有匹配的 PyTorch/CUDA 环境，先核对版本，再执行 LeRobot 安装。
 
+Ubuntu 22.04 镜像若提示缺少 `libavdevice.so.58`，安装对应共享库后，在新进程中验证：
+
+```text
+apt-get update
+apt-get install -y libavdevice58
+python -c "import torchcodec; print('TorchCodec ready')"
+```
+
 ## SmolVLA 配置
 
 从仓库根目录运行 `python scripts/local/init_configs.py` 创建个人配置；已存在的文件保持不变。设备字段见 [设备信息](device-info.md)，完整命令见 [操作流程](workflow.md)。
