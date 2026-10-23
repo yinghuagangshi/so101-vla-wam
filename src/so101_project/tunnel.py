@@ -43,6 +43,9 @@ def main() -> int:
         return subprocess.run(cmd, check=False).returncode
     except (OSError, ValueError) as exc:
         parser.exit(2, f"SSH 配置错误：{exc}\n")
+    except KeyboardInterrupt:
+        print("SSH 隧道已停止。")
+        return 130
 
 
 if __name__ == "__main__":
