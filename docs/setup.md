@@ -38,6 +38,22 @@ apt-get install -y libavdevice58
 python -c "import torchcodec; print('TorchCodec ready')"
 ```
 
+## 基础模型与网络
+
+复现时使用 `lerobot/smolvla_base` 的固定版本 `5e8d12a6e2975b0e5e5fce7c8caf47c371d257b6`。官方地址可达时，直接运行 `hf download`。AutoDL 上访问受限时，可使用 [平台文档列出的镜像](https://api.autodl.com/docs/network_turbo/)，在云端当前终端设置：
+
+```text
+export HF_ENDPOINT=https://hf-mirror.com
+export HF_HUB_DISABLE_IMPLICIT_TOKEN=1
+export HF_HUB_DISABLE_XET=1
+hf download lerobot/smolvla_base --revision 5e8d12a6e2975b0e5e5fce7c8caf47c371d257b6 --local-dir /root/autodl-tmp/models/smolvla_base
+sha256sum /root/autodl-tmp/models/smolvla_base/model.safetensors
+```
+
+基础权重的 SHA-256 应为 `7cd549ac2351fb069c0ddb3c34ad2d09cfc92b56a15dccdfc2e41467aaca01eb`，来源为 [Hugging Face 官方文件元数据](https://huggingface.co/api/models/lerobot/smolvla_base/revision/5e8d12a6e2975b0e5e5fce7c8caf47c371d257b6?blobs=true)。将个人云端配置的 `training.policy.path` 设为下载目录；基础权重目录与微调后的实机部署目录分别维护。
+
+训练与推理还会读取视觉语言骨干配置和分词器资源，应在相应进程沿用可用的 `HF_ENDPOINT`，或先完成缓存。上述认证设置用于公开基础模型下载；本项目数据从本地目录读取，默认不上传 Hub。
+
 ## SmolVLA 配置
 
 从仓库根目录运行 `python scripts/local/init_configs.py` 创建个人配置；已存在的文件保持不变。设备字段见 [设备信息](device-info.md)，完整命令见 [操作流程](workflow.md)。
